@@ -8,18 +8,12 @@ import os
 
 app = Flask(__name__)
 
-# 👉 Railway usa este puerto automáticamente
-PORT = int(os.environ.get("PORT", 5000))
 
-# 👉 cambia esto cuando tengas tu URL real
+PORT = int(os.environ.get("PORT", 5000))
 PUBLIC_URL = "https://TU-APP.up.railway.app"
 
 PASSWORD = "admin123"
 
-
-# =========================
-# 🗄️ BASE DE DATOS
-# =========================
 def init_db():
     conn = sqlite3.connect("data.db")
     c = conn.cursor()
@@ -37,10 +31,6 @@ def init_db():
 
 init_db()
 
-
-# =========================
-# 🌍 GEOLOCALIZACIÓN
-# =========================
 def get_country(ip):
     try:
         res = requests.get(f"http://ip-api.com/json/{ip}", timeout=3)
@@ -49,27 +39,14 @@ def get_country(ip):
     except:
         return "Unknown"
 
-
-# =========================
-# 📱 DISPOSITIVO
-# =========================
 def detectar_dispositivo(user_agent):
     if user_agent and "Mobile" in user_agent:
         return "📱 Móvil"
     return "💻 PC"
 
-
-# =========================
-# 🌍 IP REAL
-# =========================
 def get_real_ip():
     return request.headers.get("X-Forwarded-For", request.remote_addr)
 
-
-# =========================
-# 🏠 LANDING
-# =========================
-@app.route("/")
 def index():
     ip = get_real_ip()
     user_agent = request.headers.get("User-Agent")
@@ -95,10 +72,6 @@ def index():
     </html>
     """
 
-
-# =========================
-# 📷 QR
-# =========================
 @app.route("/qr")
 def qr():
     img = qrcode.make(PUBLIC_URL)
@@ -108,9 +81,6 @@ def qr():
     return send_file(buffer, mimetype="image/png")
 
 
-# =========================
-# 🔐 LOGIN SIMPLE
-# =========================
 @app.route("/login")
 def login():
     return """
@@ -121,9 +91,6 @@ def login():
     """
 
 
-# =========================
-# 📊 DASHBOARD
-# =========================
 @app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
     if request.method == "POST":
@@ -190,8 +157,5 @@ def dashboard():
     """
 
 
-# =========================
-# 🚀 START
-# =========================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT)
